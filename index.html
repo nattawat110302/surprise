@@ -163,6 +163,10 @@
   </style>
 </head>
 <body>
+  
+  <!-- เครื่องเล่นเสียงแบบซ่อน อ่านไฟล์ PROXIE.mp4 ทันที และตั้ง loop ให้วนซ้ำ -->
+  <audio id="bgMusic" src="PROXIE.mp4" loop preload="auto"></audio>
+
   <button class="music-btn" id="musicBtn" aria-label="เปิดหรือปิดเพลง" title="เปิด/ปิดเพลง">♪</button>
 
   <main class="card" id="card">
@@ -192,14 +196,9 @@
       </div>
 
       <h1>เป็นแฟนกันไหม 💗</h1>
-      <!-- <p class="sub">
-        เราชอบเธอมากนะ และอยากมีเธออยู่ในทุกวันต่อจากนี้<br>
-        ถ้าเธอโอเค...มาเป็นแฟนกันนะ
-      </p> -->
 
       <div class="buttons" id="buttonArea">
         <button id="yesBtn">ตกลง 💕</button>
-        <!-- เลือกอีโมจิร้องไห้ที่ชอบ แล้วลบอันที่ไม่ต้องการออกได้เลยครับ -->
         <button id="noBtn">ไม่!! 😭</button>
       </div>
       <div class="footer">ตอบดี ๆ นะ คนทำเว็บลุ้นอยู่ 😳</div>
@@ -217,28 +216,26 @@
     const noBtn = document.getElementById('noBtn');
     const question = document.getElementById('question');
     const success = document.getElementById('success');
+    const musicBtn = document.getElementById('musicBtn');
+    const bgMusic = document.getElementById('bgMusic');
 
     let noCount = 0;
+    let isMusicPlaying = false;
+    let userHasInteracted = false;
 
     function moveNoButton() {
-      // เปลี่ยนข้อความทันทีที่ปุ่มขยับหนีครั้งแรก เพื่อความกวนประสาท
+      // เปลี่ยนข้อความทันทีที่ปุ่มขยับหนีครั้งแรก
       noBtn.textContent = 'ไม่!! 😝';
 
-      // 1. ย้ายปุ่ม "ไม่เอา" ออกมาไว้ที่ body ชั้นนอกสุด 
       if (noBtn.parentNode !== document.body) {
         document.body.appendChild(noBtn);
         noBtn.style.position = 'fixed';
       }
 
-      // 2. หาขนาดของปุ่ม
       const btnWidth = noBtn.offsetWidth;
       const btnHeight = noBtn.offsetHeight;
-      
-      // 3. หาขนาดหน้าจอจริงๆ 
       const vWidth = window.innerWidth;
       const vHeight = window.innerHeight;
-
-      // 4. บังคับไม่ให้ปุ่มไปชิดขอบจอเกินไป
       const padding = 20;
       const maxX = vWidth - btnWidth - padding;
       const maxY = vHeight - btnHeight - padding;
@@ -246,13 +243,11 @@
       let x, y;
       let tries = 0;
 
-      // สุ่มพิกัดใหม่
       do {
         x = padding + Math.random() * (maxX - padding);
         y = padding + Math.random() * (maxY - padding);
         tries++;
 
-        // เช็คว่าพิกัดใหม่ทับปุ่ม "ตกลง" หรือไม่
         const yesRect = yesBtn.getBoundingClientRect();
         const overlapsYes =
           x < yesRect.right + 20 &&
@@ -263,17 +258,14 @@
         if (!overlapsYes) break;
       } while (tries < 30);
 
-      // ขยับปุ่มไปจุดใหม่
       noBtn.style.left = `${x}px`;
       noBtn.style.top = `${y}px`;
 
       noCount++;
-      // ทำให้ปุ่ม 'ตกลง' ใหญ่ขึ้นเรื่อยๆ
       const yesScale = Math.min(1.8, 1 + noCount * 0.1);
       yesBtn.style.transform = `scale(${yesScale})`;
     }
 
-    // จับเหตุการณ์ทั้งเมาส์และนิ้วสัมผัส
     ['mouseenter', 'pointerdown', 'touchstart', 'click'].forEach(evt => {
       noBtn.addEventListener(evt, (e) => {
         e.preventDefault();
@@ -281,13 +273,12 @@
       }, { passive: false });
     });
 
-    yesBtn.addEventListener('click', async () => {
-      await startMusic();
+    yesBtn.addEventListener('click', () => {
+      startMusic();
       noBtn.style.display = 'none';
       question.style.display = 'none';
       success.style.display = 'block';
 
-      // พลุหัวใจ
       for (let i = 0; i < 22; i++) {
         const heart = document.createElement('div');
         heart.textContent = ['💗','💕','💖','💘'][Math.floor(Math.random()*4)];
@@ -309,70 +300,47 @@
       }
     });
 
-    // ระบบเล่นเพลงบรรเลง --------------------------
-    let audioCtx = null;
-    let musicTimer = null;
-    let isMusicPlaying = false;
+    // ==========================================
+    // ระบบควบคุมไฟล์เสียงท้องถิ่น (Local Audio)
+    // ==========================================
 
-    const melody = [
-      [261.63, 0.30], [329.63, 0.30], [392.00, 0.45],
-      [329.63, 0.30], [349.23, 0.30], [440.00, 0.45],
-      [392.00, 0.30], [329.63, 0.30], [293.66, 0.45],
-      [329.63, 0.30], [261.63, 0.60]
-    ];
-
-    function playNote(freq, duration, when) {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.value = freq;
-      gain.gain.setValueAtTime(0.0001, when);
-      gain.gain.exponentialRampToValueAtTime(0.055, when + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start(when);
-      osc.stop(when + duration + 0.05);
-    }
-
-    function scheduleMelody() {
-      if (!isMusicPlaying || !audioCtx) return;
-      let t = audioCtx.currentTime + 0.05;
-      let total = 0;
-      melody.forEach(([freq, dur]) => {
-        playNote(freq, dur, t + total);
-        total += dur + 0.06;
-      });
-      musicTimer = setTimeout(scheduleMelody, total * 1000 + 300);
-    }
-
-    async function startMusic() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') await audioCtx.resume();
-      if (!isMusicPlaying) {
+    function startMusic() {
+      // สั่งให้เล่นเพลง 
+      bgMusic.play().then(() => {
         isMusicPlaying = true;
         musicBtn.textContent = '♫';
         musicBtn.title = 'ปิดเพลง';
-        scheduleMelody();
-      }
+      }).catch((err) => {
+        console.log("ระบบป้องกันออโต้เพลย์ทำงาน หรือยังโหลดไฟล์ไม่เสร็จ: ", err);
+      });
+      userHasInteracted = true;
     }
 
     function stopMusic() {
+      bgMusic.pause();
       isMusicPlaying = false;
-      clearTimeout(musicTimer);
       musicBtn.textContent = '♪';
       musicBtn.title = 'เปิดเพลง';
     }
 
-    musicBtn.addEventListener('click', async () => {
-      if (isMusicPlaying) stopMusic();
-      else await startMusic();
+    // เมื่อกดปุ่มโน้ตดนตรีมุมขวาบน
+    musicBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (isMusicPlaying) {
+        stopMusic();
+      } else {
+        startMusic();
+      }
     });
 
-    document.addEventListener('pointerdown', async function firstInteraction(e) {
-      if (e.target !== musicBtn) await startMusic();
-      document.removeEventListener('pointerdown', firstInteraction);
-    }, { once: true });
+    // ทันทีที่ผู้ใช้แตะหรือคลิกที่หน้าจอครั้งแรก ให้เพลงเริ่มเล่นทันที
+    ['click', 'touchstart'].forEach(evt => {
+      document.body.addEventListener(evt, () => {
+        if (!userHasInteracted) {
+          startMusic();
+        }
+      }, { once: true });
+    });
 
   </script>
 </body>
