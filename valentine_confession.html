@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>เป็นแฟนกันไหม 💗</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      font-family: "Tahoma", "Noto Sans Thai", sans-serif;
+      background:
+        radial-gradient(circle at 20% 20%, #fff7f8 0 8%, transparent 9%),
+        radial-gradient(circle at 80% 15%, #ffeef2 0 10%, transparent 11%),
+        linear-gradient(135deg, #ffe7ec, #fff4f6);
+      color: #8a3b4b;
+    }
+
+    .card {
+      width: min(92vw, 560px);
+      padding: 42px 26px 34px;
+      text-align: center;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(255,255,255,.95);
+      border-radius: 28px;
+      box-shadow: 0 18px 50px rgba(170, 88, 108, .16);
+      backdrop-filter: blur(8px);
+      position: relative;
+    }
+
+    .hearts span {
+      position: absolute;
+      font-size: 18px;
+      color: #ff8aa4;
+      animation: float 3s ease-in-out infinite;
+      user-select: none;
+    }
+    .hearts span:nth-child(1){left:12%;top:16%;animation-delay:.1s}
+    .hearts span:nth-child(2){right:14%;top:20%;animation-delay:.6s}
+    .hearts span:nth-child(3){left:18%;bottom:24%;animation-delay:1.2s}
+    .hearts span:nth-child(4){right:18%;bottom:19%;animation-delay:1.7s}
+
+    @keyframes float {
+      0%,100% { transform: translateY(0) scale(1); opacity:.65 }
+      50% { transform: translateY(-10px) scale(1.12); opacity:1 }
+    }
+
+    .cat-wrap {
+      width: 150px;
+      height: 130px;
+      margin: 0 auto 10px;
+    }
+
+    h1 {
+      margin: 8px 0 10px;
+      color: #e54262;
+      font-size: clamp(28px, 6vw, 42px);
+      line-height: 1.25;
+    }
+
+    .sub {
+      margin: 0 auto 28px;
+      max-width: 430px;
+      color: #9d6170;
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .buttons {
+      height: 70px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 13px 25px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    #yesBtn {
+      background: #ff8da7;
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(255, 141, 167, .35);
+    }
+
+    #yesBtn:hover {
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 11px 22px rgba(255, 141, 167, .45);
+    }
+
+    #noBtn {
+      background: #fff;
+      color: #9a7b82;
+      border: 1px solid #f1d8df;
+      position: relative;
+    }
+
+    .success {
+      display: none;
+      animation: pop .45s ease both;
+    }
+
+    @keyframes pop {
+      from { transform: scale(.86); opacity:0; }
+      to { transform: scale(1); opacity:1; }
+    }
+
+    .success .big {
+      font-size: 72px;
+      margin-bottom: 8px;
+    }
+
+    .success h2 {
+      margin: 0 0 8px;
+      color: #e54262;
+      font-size: 34px;
+    }
+
+    .success p {
+      margin: 0;
+      color: #9d6170;
+      font-size: 18px;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #bd8b97;
+    }
+
+    .music-btn {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      width: 46px;
+      height: 46px;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(255,255,255,.9);
+      color: #e54262;
+      border: 1px solid #f3ccd5;
+      box-shadow: 0 8px 20px rgba(170, 88, 108, .14);
+      z-index: 10000;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <button class="music-btn" id="musicBtn" aria-label="เปิดหรือปิดเพลง" title="เปิด/ปิดเพลง">♪</button>
+
+  <main class="card" id="card">
+    <div class="hearts" aria-hidden="true">
+      <span>♡</span><span>♡</span><span>♡</span><span>♡</span>
+    </div>
+
+    <section id="question">
+      <div class="cat-wrap" aria-hidden="true">
+        <svg viewBox="0 0 180 150" width="100%" height="100%">
+          <g fill="none" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+            <!-- left cat -->
+            <path fill="#fff" d="M44 78 L37 52 L50 61 L64 53 L73 66 C79 80 77 102 68 116 C58 126 40 124 33 112 C27 102 27 88 31 77 Z"/>
+            <path d="M44 84 q8 7 16 0"/>
+            <path d="M49 73 h1 M63 73 h1"/>
+            <!-- right cat -->
+            <path fill="#fff" d="M101 63 L96 41 L109 49 L122 40 L132 53 C141 60 145 78 139 92 C133 103 119 109 104 104 C92 101 85 91 87 79 Z"/>
+            <path d="M106 65 h1 M122 63 h1"/>
+            <path d="M109 76 q7 6 14 0"/>
+            <!-- cuddle arms -->
+            <path d="M73 77 C83 70 91 70 101 76"/>
+            <path d="M98 84 C88 94 80 95 71 90"/>
+          </g>
+          <g fill="#ff8da7" font-size="22">
+            <text x="18" y="42">♡</text>
+            <text x="145" y="57">♡</text>
+            <text x="18" y="106">♡</text>
+          </g>
+        </svg>
+      </div>
+
+      <h1>เป็นแฟนกันไหม 💗</h1>
+      <p class="sub">
+        เราชอบเธอมากนะ และอยากมีเธออยู่ในทุกวันต่อจากนี้<br>
+        ถ้าเธอโอเค...มาเป็นแฟนกันนะ
+      </p>
+
+      <div class="buttons" id="buttonArea">
+        <button id="yesBtn">ตกลง 💕</button>
+        <button id="noBtn">ไม่เอา 😝</button>
+      </div>
+      <div class="footer">ตอบดี ๆ นะ คนทำเว็บลุ้นอยู่ 😳</div>
+    </section>
+
+    <section class="success" id="success">
+      <div class="big">💞</div>
+      <h2>เย้! เป็นแฟนกันแล้วนะ</h2>
+      <p>จากวันนี้ขอฝากหัวใจไว้กับเธอด้วยนะ 🫶</p>
+    </section>
+  </main>
+
+  <script>
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const card = document.getElementById('card');
+    const question = document.getElementById('question');
+    const success = document.getElementById('success');
+
+    let noCount = 0;
+
+    function moveNoButton() {
+      const btnRect = noBtn.getBoundingClientRect();
+      noBtn.style.position = 'fixed';
+
+      const padding = 18;
+      const maxX = Math.max(padding, window.innerWidth - btnRect.width - padding);
+      const maxY = Math.max(padding, window.innerHeight - btnRect.height - padding);
+
+      let x, y;
+      let tries = 0;
+
+      // สุ่มตำแหน่งใหม่เรื่อย ๆ และพยายามไม่ให้ไปทับปุ่มตกลง
+      do {
+        x = padding + Math.random() * Math.max(1, maxX - padding);
+        y = padding + Math.random() * Math.max(1, maxY - padding);
+        tries++;
+
+        const yesRect = yesBtn.getBoundingClientRect();
+        const overlapsYes =
+          x < yesRect.right + 55 &&
+          x + btnRect.width > yesRect.left - 55 &&
+          y < yesRect.bottom + 55 &&
+          y + btnRect.height > yesRect.top - 55;
+
+        if (!overlapsYes) break;
+      } while (tries < 20);
+
+      noBtn.style.left = `${x}px`;
+      noBtn.style.top = `${y}px`;
+
+      noCount++;
+
+      // ปุ่มปฏิเสธหนีต่อไปได้ไม่จำกัด
+      // และปุ่มตกลงค่อย ๆ ใหญ่ขึ้นเพื่อความน่ารัก
+      const scale = Math.min(1.8, 1 + noCount * 0.06);
+      yesBtn.style.transform = `scale(${scale})`;
+    }
+
+    // ทั้งคอมและมือถือ: ยิ่งพยายามแตะ/กดปฏิเสธ ปุ่มก็ยิ่งหนีไปเรื่อย ๆ
+    ['mouseenter', 'pointerdown', 'touchstart', 'click'].forEach(evt => {
+      noBtn.addEventListener(evt, (e) => {
+        e.preventDefault();
+        moveNoButton();
+      }, { passive: false });
+    });
+
+    yesBtn.addEventListener('click', async () => {
+      await startMusic();
+      noBtn.style.display = 'none';
+      question.style.display = 'none';
+      success.style.display = 'block';
+
+      for (let i = 0; i < 22; i++) {
+        const heart = document.createElement('div');
+        heart.textContent = ['💗','💕','💖','💘'][Math.floor(Math.random()*4)];
+        heart.style.position = 'fixed';
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.top = '105vh';
+        heart.style.fontSize = (18 + Math.random() * 24) + 'px';
+        heart.style.transition = `transform ${2 + Math.random()*2}s ease-out, opacity ${2 + Math.random()*2}s ease-out`;
+        heart.style.zIndex = 9999;
+        heart.style.pointerEvents = 'none';
+        document.body.appendChild(heart);
+
+        requestAnimationFrame(() => {
+          heart.style.transform = `translateY(-120vh) rotate(${Math.random()*360}deg)`;
+          heart.style.opacity = '0';
+        });
+
+        setTimeout(() => heart.remove(), 4200);
+      }
+    });
+
+    // เพลงรักแบบบรรเลงด้วย Web Audio API
+    // ไม่ต้องโหลดไฟล์เพลงจากภายนอก และเล่นได้หลังผู้ใช้แตะ/คลิกครั้งแรก
+    let audioCtx = null;
+    let musicTimer = null;
+    let isMusicPlaying = false;
+
+    const melody = [
+      [261.63, 0.30], [329.63, 0.30], [392.00, 0.45],
+      [329.63, 0.30], [349.23, 0.30], [440.00, 0.45],
+      [392.00, 0.30], [329.63, 0.30], [293.66, 0.45],
+      [329.63, 0.30], [261.63, 0.60]
+    ];
+
+    function playNote(freq, duration, when) {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+
+      gain.gain.setValueAtTime(0.0001, when);
+      gain.gain.exponentialRampToValueAtTime(0.055, when + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(when);
+      osc.stop(when + duration + 0.05);
+    }
+
+    function scheduleMelody() {
+      if (!isMusicPlaying || !audioCtx) return;
+
+      let t = audioCtx.currentTime + 0.05;
+      let total = 0;
+
+      melody.forEach(([freq, dur]) => {
+        playNote(freq, dur, t + total);
+        total += dur + 0.06;
+      });
+
+      musicTimer = setTimeout(scheduleMelody, total * 1000 + 300);
+    }
+
+    async function startMusic() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      if (audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+      }
+
+      if (!isMusicPlaying) {
+        isMusicPlaying = true;
+        musicBtn.textContent = '♫';
+        musicBtn.title = 'ปิดเพลง';
+        scheduleMelody();
+      }
+    }
+
+    function stopMusic() {
+      isMusicPlaying = false;
+      clearTimeout(musicTimer);
+      musicBtn.textContent = '♪';
+      musicBtn.title = 'เปิดเพลง';
+    }
+
+    musicBtn.addEventListener('click', async () => {
+      if (isMusicPlaying) {
+        stopMusic();
+      } else {
+        await startMusic();
+      }
+    });
+
+    // พยายามเริ่มเพลงเมื่อมี interaction แรกของผู้ใช้
+    document.addEventListener('pointerdown', async function firstInteraction(e) {
+      if (e.target !== musicBtn) {
+        await startMusic();
+      }
+      document.removeEventListener('pointerdown', firstInteraction);
+    }, { once: true });
+
+  </script>
+</body>
+</html>
