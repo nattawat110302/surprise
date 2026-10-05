@@ -2,17 +2,18 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>เป็นแฟนกันไหม 💗</title>
   <style>
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      min-height: 100vh;
+      height: 100vh;
+      height: 100dvh;
       display: grid;
       place-items: center;
-      overflow: hidden;
+      overflow: hidden; 
       font-family: "Tahoma", "Noto Sans Thai", sans-serif;
       background:
         radial-gradient(circle at 20% 20%, #fff7f8 0 8%, transparent 9%),
@@ -87,17 +88,17 @@
       font-size: 17px;
       font-weight: 700;
       cursor: pointer;
-      transition: transform .15s ease, box-shadow .15s ease;
+      transition: all 0.25s ease-out;
     }
 
     #yesBtn {
       background: #ff8da7;
       color: #fff;
       box-shadow: 0 8px 18px rgba(255, 141, 167, .35);
+      z-index: 2;
     }
 
     #yesBtn:hover {
-      transform: translateY(-2px) scale(1.04);
       box-shadow: 0 11px 22px rgba(255, 141, 167, .45);
     }
 
@@ -106,6 +107,7 @@
       color: #9a7b82;
       border: 1px solid #f1d8df;
       position: relative;
+      z-index: 9999;
     }
 
     .success {
@@ -172,15 +174,12 @@
       <div class="cat-wrap" aria-hidden="true">
         <svg viewBox="0 0 180 150" width="100%" height="100%">
           <g fill="none" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-            <!-- left cat -->
             <path fill="#fff" d="M44 78 L37 52 L50 61 L64 53 L73 66 C79 80 77 102 68 116 C58 126 40 124 33 112 C27 102 27 88 31 77 Z"/>
             <path d="M44 84 q8 7 16 0"/>
             <path d="M49 73 h1 M63 73 h1"/>
-            <!-- right cat -->
             <path fill="#fff" d="M101 63 L96 41 L109 49 L122 40 L132 53 C141 60 145 78 139 92 C133 103 119 109 104 104 C92 101 85 91 87 79 Z"/>
             <path d="M106 65 h1 M122 63 h1"/>
             <path d="M109 76 q7 6 14 0"/>
-            <!-- cuddle arms -->
             <path d="M73 77 C83 70 91 70 101 76"/>
             <path d="M98 84 C88 94 80 95 71 90"/>
           </g>
@@ -193,14 +192,15 @@
       </div>
 
       <h1>เป็นแฟนกันไหม 💗</h1>
-      <p class="sub">
+      <!-- <p class="sub">
         เราชอบเธอมากนะ และอยากมีเธออยู่ในทุกวันต่อจากนี้<br>
         ถ้าเธอโอเค...มาเป็นแฟนกันนะ
-      </p>
+      </p> -->
 
       <div class="buttons" id="buttonArea">
         <button id="yesBtn">ตกลง 💕</button>
-        <button id="noBtn">ไม่เอา 😝</button>
+        <!-- เลือกอีโมจิร้องไห้ที่ชอบ แล้วลบอันที่ไม่ต้องการออกได้เลยครับ -->
+        <button id="noBtn">ไม่!! 😭</button>
       </div>
       <div class="footer">ตอบดี ๆ นะ คนทำเว็บลุ้นอยู่ 😳</div>
     </section>
@@ -215,51 +215,65 @@
   <script>
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
-    const card = document.getElementById('card');
     const question = document.getElementById('question');
     const success = document.getElementById('success');
 
     let noCount = 0;
 
     function moveNoButton() {
-      const btnRect = noBtn.getBoundingClientRect();
-      noBtn.style.position = 'fixed';
+      // เปลี่ยนข้อความทันทีที่ปุ่มขยับหนีครั้งแรก เพื่อความกวนประสาท
+      noBtn.textContent = 'ไม่!! 😝';
 
-      const padding = 18;
-      const maxX = Math.max(padding, window.innerWidth - btnRect.width - padding);
-      const maxY = Math.max(padding, window.innerHeight - btnRect.height - padding);
+      // 1. ย้ายปุ่ม "ไม่เอา" ออกมาไว้ที่ body ชั้นนอกสุด 
+      if (noBtn.parentNode !== document.body) {
+        document.body.appendChild(noBtn);
+        noBtn.style.position = 'fixed';
+      }
+
+      // 2. หาขนาดของปุ่ม
+      const btnWidth = noBtn.offsetWidth;
+      const btnHeight = noBtn.offsetHeight;
+      
+      // 3. หาขนาดหน้าจอจริงๆ 
+      const vWidth = window.innerWidth;
+      const vHeight = window.innerHeight;
+
+      // 4. บังคับไม่ให้ปุ่มไปชิดขอบจอเกินไป
+      const padding = 20;
+      const maxX = vWidth - btnWidth - padding;
+      const maxY = vHeight - btnHeight - padding;
 
       let x, y;
       let tries = 0;
 
-      // สุ่มตำแหน่งใหม่เรื่อย ๆ และพยายามไม่ให้ไปทับปุ่มตกลง
+      // สุ่มพิกัดใหม่
       do {
-        x = padding + Math.random() * Math.max(1, maxX - padding);
-        y = padding + Math.random() * Math.max(1, maxY - padding);
+        x = padding + Math.random() * (maxX - padding);
+        y = padding + Math.random() * (maxY - padding);
         tries++;
 
+        // เช็คว่าพิกัดใหม่ทับปุ่ม "ตกลง" หรือไม่
         const yesRect = yesBtn.getBoundingClientRect();
         const overlapsYes =
-          x < yesRect.right + 55 &&
-          x + btnRect.width > yesRect.left - 55 &&
-          y < yesRect.bottom + 55 &&
-          y + btnRect.height > yesRect.top - 55;
+          x < yesRect.right + 20 &&
+          x + btnWidth > yesRect.left - 20 &&
+          y < yesRect.bottom + 20 &&
+          y + btnHeight > yesRect.top - 20;
 
         if (!overlapsYes) break;
-      } while (tries < 20);
+      } while (tries < 30);
 
+      // ขยับปุ่มไปจุดใหม่
       noBtn.style.left = `${x}px`;
       noBtn.style.top = `${y}px`;
 
       noCount++;
-
-      // ปุ่มปฏิเสธหนีต่อไปได้ไม่จำกัด
-      // และปุ่มตกลงค่อย ๆ ใหญ่ขึ้นเพื่อความน่ารัก
-      const scale = Math.min(1.8, 1 + noCount * 0.06);
-      yesBtn.style.transform = `scale(${scale})`;
+      // ทำให้ปุ่ม 'ตกลง' ใหญ่ขึ้นเรื่อยๆ
+      const yesScale = Math.min(1.8, 1 + noCount * 0.1);
+      yesBtn.style.transform = `scale(${yesScale})`;
     }
 
-    // ทั้งคอมและมือถือ: ยิ่งพยายามแตะ/กดปฏิเสธ ปุ่มก็ยิ่งหนีไปเรื่อย ๆ
+    // จับเหตุการณ์ทั้งเมาส์และนิ้วสัมผัส
     ['mouseenter', 'pointerdown', 'touchstart', 'click'].forEach(evt => {
       noBtn.addEventListener(evt, (e) => {
         e.preventDefault();
@@ -273,6 +287,7 @@
       question.style.display = 'none';
       success.style.display = 'block';
 
+      // พลุหัวใจ
       for (let i = 0; i < 22; i++) {
         const heart = document.createElement('div');
         heart.textContent = ['💗','💕','💖','💘'][Math.floor(Math.random()*4)];
@@ -294,8 +309,7 @@
       }
     });
 
-    // เพลงรักแบบบรรเลงด้วย Web Audio API
-    // ไม่ต้องโหลดไฟล์เพลงจากภายนอก และเล่นได้หลังผู้ใช้แตะ/คลิกครั้งแรก
+    // ระบบเล่นเพลงบรรเลง --------------------------
     let audioCtx = null;
     let musicTimer = null;
     let isMusicPlaying = false;
@@ -310,14 +324,11 @@
     function playNote(freq, duration, when) {
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
-
       osc.type = 'sine';
       osc.frequency.value = freq;
-
       gain.gain.setValueAtTime(0.0001, when);
       gain.gain.exponentialRampToValueAtTime(0.055, when + 0.03);
       gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
-
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       osc.start(when);
@@ -326,27 +337,18 @@
 
     function scheduleMelody() {
       if (!isMusicPlaying || !audioCtx) return;
-
       let t = audioCtx.currentTime + 0.05;
       let total = 0;
-
       melody.forEach(([freq, dur]) => {
         playNote(freq, dur, t + total);
         total += dur + 0.06;
       });
-
       musicTimer = setTimeout(scheduleMelody, total * 1000 + 300);
     }
 
     async function startMusic() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-
-      if (audioCtx.state === 'suspended') {
-        await audioCtx.resume();
-      }
-
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') await audioCtx.resume();
       if (!isMusicPlaying) {
         isMusicPlaying = true;
         musicBtn.textContent = '♫';
@@ -363,18 +365,12 @@
     }
 
     musicBtn.addEventListener('click', async () => {
-      if (isMusicPlaying) {
-        stopMusic();
-      } else {
-        await startMusic();
-      }
+      if (isMusicPlaying) stopMusic();
+      else await startMusic();
     });
 
-    // พยายามเริ่มเพลงเมื่อมี interaction แรกของผู้ใช้
     document.addEventListener('pointerdown', async function firstInteraction(e) {
-      if (e.target !== musicBtn) {
-        await startMusic();
-      }
+      if (e.target !== musicBtn) await startMusic();
       document.removeEventListener('pointerdown', firstInteraction);
     }, { once: true });
 
