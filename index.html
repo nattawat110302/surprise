@@ -37,15 +37,13 @@
         radial-gradient(circle at 80% 15%, #ffeef2 0 10%, transparent 11%),
         linear-gradient(135deg, #ffe7ec, #fff4f6);
       z-index: 99999; 
-      /* เพิ่ม transform ให้ซูมตอนหายไป */
       transition: opacity 0.8s ease, visibility 0.8s ease, transform 0.8s ease;
     }
     
-    /* คลาสตอนสั่งให้ฉากซองจดหมายหายไป */
     .envelope-screen.fade-out {
       opacity: 0;
       visibility: hidden;
-      transform: scale(1.2); /* ซูมขยายเบาๆ ให้ดูมีมิติ */
+      transform: scale(1.2); 
     }
 
     .envelope {
@@ -255,7 +253,6 @@
       font-size: 20px;
     }
 
-    /* แคปซูลข้อความตอนกดตกลง */
     .floating-bubble {
       position: fixed;
       background: #ffffff;
@@ -280,12 +277,12 @@
 </head>
 <body>
   
-  <audio id="bgMusic" src="PROXIE.mp4" loop preload="auto"></audio>
+  <!-- แก้ปัญหาไฟล์ .mp4 บนมือถือ โดยใช้แท็ก video แบบซ่อนแทน audio -->
+  <video id="bgMusic" src="PROXIE.mp4" loop playsinline style="display: none;"></video>
+  
   <button class="music-btn" id="musicBtn" aria-label="เปิดหรือปิดเพลง" title="เปิด/ปิดเพลง">♪</button>
 
-  <!-- ==========================================
-       ฉากซองจดหมายตอนเริ่มต้น
-       ========================================== -->
+  <!-- ฉากซองจดหมาย -->
   <div id="envelopeScreen" class="envelope-screen">
     <div class="envelope" id="envelopeBtn">
       <div class="envelope-back"></div>
@@ -297,9 +294,7 @@
     <p class="click-text" id="clickText">มีจดหมายส่งถึงเธอ 💌<br><small>(แตะเพื่อเปิดซอง)</small></p>
   </div>
 
-  <!-- ==========================================
-       ฉากคำถาม (การ์ดหลัก)
-       ========================================== -->
+  <!-- การ์ดหลัก -->
   <main class="card" id="card">
     <div class="hearts" aria-hidden="true">
       <span>♡</span><span>♡</span><span>♡</span><span>♡</span>
@@ -348,21 +343,14 @@
     const waitImages = ['wait.jpg', 'wait1.jpg', 'wait2.jpg'];
     let currentImgIndex = 0;
 
-    // ==========================================
-    // ระบบเปิดซองจดหมายแบบอลังการ (เพิ่มพลุหัวใจตอนเปิดซอง)
-    // ==========================================
+    // ระบบเปิดซองจดหมาย
     envelopeBtn.addEventListener('click', () => {
       startMusic();
-      
-      // ให้ซองเปิด
       envelopeBtn.classList.add('open');
-      
-      // ซ่อนข้อความ "แตะเพื่อเปิดซอง" ทันที
       clickText.style.opacity = '0';
 
-      // 💥 สร้างเอฟเฟกต์ "พลุหัวใจกระจายตัว" ทันทีที่กดซอง
       const emojis = ['💖', '💕', '💗', '✨', '💌'];
-      for (let i = 0; i < 60; i++) { // ยิงพลุออกไป 60 ดวง
+      for (let i = 0; i < 60; i++) {
         const particle = document.createElement('div');
         particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
         particle.style.position = 'fixed';
@@ -373,34 +361,28 @@
         particle.style.zIndex = 100000;
         document.body.appendChild(particle);
 
-        // สุ่มระยะกระเด็นในทุกทิศทาง
-        const tx = (Math.random() - 0.5) * 150; // แนวนอน
-        const ty = (Math.random() - 0.5) * 150; // แนวตั้ง
-
+        const tx = (Math.random() - 0.5) * 150; 
+        const ty = (Math.random() - 0.5) * 150; 
         const duration = 1000 + Math.random() * 1500;
 
-        // สั่งให้กระจายออกอย่างรวดเร็วแล้วค่อยๆ เฟดจางหายไป
         particle.animate([
           { transform: `translate(-50%, -50%) scale(0.2) rotate(0deg)`, opacity: 1 },
           { transform: `translate(calc(-50% + ${tx}vw), calc(-50% + ${ty}vh)) scale(1.5) rotate(${Math.random() * 360}deg)`, opacity: 0 }
         ], {
           duration: duration,
-          easing: 'cubic-bezier(0, .9, .5, 1)', // กระเด็นออกเร็วๆ แล้วชะลอตอนปลาย
+          easing: 'cubic-bezier(0, .9, .5, 1)', 
           fill: 'forwards'
         });
 
         setTimeout(() => particle.remove(), duration);
       }
       
-      // รอให้จดหมายเด้งขึ้นมาสักพัก แล้วค่อยสั่งให้ฉากซองเฟดจางและซูมหายไป
       setTimeout(() => {
         envelopeScreen.classList.add('fade-out');
       }, 1600); 
-    }, { once: true }); // ให้กดซองได้แค่ครั้งเดียว
+    }, { once: true });
 
-    // ==========================================
-    // ระบบปุ่มหนี & วนลูปรูป
-    // ==========================================
+    // ระบบปุ่มหนี
     function moveNoButton() {
       noBtn.textContent = 'No Way!! 😝';
 
@@ -453,9 +435,7 @@
       }, { passive: false });
     });
 
-    // ==========================================
-    // ระบบตอบตกลง & แคปซูลลอยค้าง
-    // ==========================================
+    // ระบบตอบตกลง
     yesBtn.addEventListener('click', () => {
       startMusic();
       noBtn.style.display = 'none';
@@ -491,9 +471,7 @@
       }
     });
 
-    // ==========================================
     // ระบบเล่นเพลง
-    // ==========================================
     function startMusic() {
       if (!isMusicPlaying) {
         bgMusic.play().then(() => {
@@ -501,7 +479,7 @@
           musicBtn.textContent = '♫';
           musicBtn.title = 'ปิดเพลง';
         }).catch((err) => {
-          console.log("รอการตอบสนองจากผู้ใช้ก่อนเล่นเพลง");
+          console.log("รอการตอบสนองจากผู้ใช้ก่อนเล่นเพลง / หรืออาจระบุชื่อไฟล์ผิด: ", err);
         });
       }
       userHasInteracted = true;
