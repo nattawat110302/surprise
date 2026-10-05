@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>เป็นแฟนกันไหม 💗</title>
+  <title>Would You Be My Baby 💗</title>
   <style>
     * { box-sizing: border-box; }
 
@@ -22,6 +22,117 @@
       color: #8a3b4b;
     }
 
+    /* ==========================================
+       สไตล์สำหรับแอนิเมชันซองจดหมาย (หน้าแรก)
+       ========================================== */
+    .envelope-screen {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at 20% 20%, #fff7f8 0 8%, transparent 9%),
+        radial-gradient(circle at 80% 15%, #ffeef2 0 10%, transparent 11%),
+        linear-gradient(135deg, #ffe7ec, #fff4f6);
+      z-index: 99999; 
+      /* เพิ่ม transform ให้ซูมตอนหายไป */
+      transition: opacity 0.8s ease, visibility 0.8s ease, transform 0.8s ease;
+    }
+    
+    /* คลาสตอนสั่งให้ฉากซองจดหมายหายไป */
+    .envelope-screen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(1.2); /* ซูมขยายเบาๆ ให้ดูมีมิติ */
+    }
+
+    .envelope {
+      position: relative;
+      width: 260px; height: 160px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      margin-top: 40px;
+    }
+    .envelope:hover {
+      transform: translateY(-5px);
+    }
+    
+    .envelope-back {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: #eec2cd;
+      border-radius: 8px;
+      box-shadow: 0 15px 40px rgba(170, 88, 108, 0.2);
+    }
+    
+    .flap {
+      position: absolute; top: 0; left: 0;
+      width: 0; height: 0;
+      border-left: 130px solid transparent;
+      border-right: 130px solid transparent;
+      border-top: 90px solid #e5a4b5;
+      transform-origin: top;
+      transition: transform 0.6s ease, z-index 0.2s;
+      z-index: 4;
+    }
+    
+    .env-body {
+      position: absolute; bottom: 0; left: 0;
+      width: 0; height: 0;
+      border-left: 130px solid #f3ccd5;
+      border-right: 130px solid #f3ccd5;
+      border-bottom: 95px solid #f1d8df;
+      z-index: 3;
+      border-radius: 0 0 8px 8px;
+    }
+    
+    .heart-seal {
+      position: absolute; top: 85px; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 36px;
+      z-index: 5;
+      transition: opacity 0.3s ease;
+    }
+    
+    .letter {
+      position: absolute; bottom: 5px; left: 10px;
+      width: 240px; height: 140px;
+      background: white;
+      border-radius: 8px;
+      z-index: 2;
+      transition: transform 0.8s ease 0.4s; 
+      display: grid;
+      place-items: center;
+      font-size: 40px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .envelope.open .flap {
+      transform: rotateX(180deg);
+      z-index: 1; 
+    }
+    .envelope.open .heart-seal {
+      opacity: 0;
+    }
+    .envelope.open .letter {
+      transform: translateY(-90px);
+    }
+
+    .click-text {
+      margin-top: 60px;
+      font-size: 20px; color: #e54262; font-weight: bold; text-align: center;
+      line-height: 1.4;
+      animation: pulse 2s infinite;
+      transition: opacity 0.3s;
+    }
+    .click-text small {
+      font-size: 15px; color: #bd8b97; font-weight: normal;
+    }
+
+    /* ==========================================
+       สไตล์ของการ์ดหลัก (หน้าคำถาม)
+       ========================================== */
     .card {
       width: min(92vw, 560px);
       padding: 42px 26px 34px;
@@ -32,6 +143,7 @@
       box-shadow: 0 18px 50px rgba(170, 88, 108, .16);
       backdrop-filter: blur(8px);
       position: relative;
+      z-index: 10;
     }
 
     .hearts span {
@@ -51,10 +163,17 @@
       50% { transform: translateY(-10px) scale(1.12); opacity:1 }
     }
 
-    .cat-wrap {
-      width: 150px;
-      height: 130px;
-      margin: 0 auto 10px;
+    .img-wrap {
+      width: 180px;
+      margin: 0 auto 15px;
+    }
+    .img-wrap img {
+      width: 100%;
+      height: auto;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(170, 88, 108, 0.15);
+      display: block;
+      transition: opacity 0.2s ease-in-out; 
     }
 
     h1 {
@@ -64,14 +183,6 @@
       line-height: 1.25;
     }
 
-    .sub {
-      margin: 0 auto 28px;
-      max-width: 430px;
-      color: #9d6170;
-      font-size: 17px;
-      line-height: 1.8;
-    }
-
     .buttons {
       height: 70px;
       position: relative;
@@ -79,6 +190,7 @@
       align-items: center;
       justify-content: center;
       gap: 14px;
+      margin-top: 10px;
     }
 
     button {
@@ -95,9 +207,8 @@
       background: #ff8da7;
       color: #fff;
       box-shadow: 0 8px 18px rgba(255, 141, 167, .35);
-      z-index: 2;
+      z-index: 12;
     }
-
     #yesBtn:hover {
       box-shadow: 0 11px 22px rgba(255, 141, 167, .45);
     }
@@ -120,27 +231,10 @@
       to { transform: scale(1); opacity:1; }
     }
 
-    .success .big {
-      font-size: 72px;
-      margin-bottom: 8px;
-    }
-
     .success h2 {
       margin: 0 0 8px;
       color: #e54262;
-      font-size: 34px;
-    }
-
-    .success p {
-      margin: 0;
-      color: #9d6170;
-      font-size: 18px;
-    }
-
-    .footer {
-      margin-top: 20px;
-      font-size: 13px;
-      color: #bd8b97;
+      font-size: clamp(24px, 5vw, 34px);
     }
 
     .music-btn {
@@ -157,75 +251,161 @@
       color: #e54262;
       border: 1px solid #f3ccd5;
       box-shadow: 0 8px 20px rgba(170, 88, 108, .14);
-      z-index: 10000;
+      z-index: 100000; 
       font-size: 20px;
+    }
+
+    /* แคปซูลข้อความตอนกดตกลง */
+    .floating-bubble {
+      position: fixed;
+      background: #ffffff;
+      color: #e54262;
+      padding: 8px 20px;
+      border-radius: 25px;
+      font-weight: 800;
+      font-size: 18px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+      z-index: 5;
+      pointer-events: none;
+      white-space: nowrap;
+      user-select: none;
+      opacity: 0; 
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.05); opacity: 1; }
     }
   </style>
 </head>
 <body>
   
-  <!-- เครื่องเล่นเสียงแบบซ่อน อ่านไฟล์ PROXIE.mp4 ทันที และตั้ง loop ให้วนซ้ำ -->
   <audio id="bgMusic" src="PROXIE.mp4" loop preload="auto"></audio>
-
   <button class="music-btn" id="musicBtn" aria-label="เปิดหรือปิดเพลง" title="เปิด/ปิดเพลง">♪</button>
 
+  <!-- ==========================================
+       ฉากซองจดหมายตอนเริ่มต้น
+       ========================================== -->
+  <div id="envelopeScreen" class="envelope-screen">
+    <div class="envelope" id="envelopeBtn">
+      <div class="envelope-back"></div>
+      <div class="letter">💕</div>
+      <div class="flap"></div>
+      <div class="env-body"></div>
+      <div class="heart-seal">❤️</div>
+    </div>
+    <p class="click-text" id="clickText">มีจดหมายส่งถึงเธอ 💌<br><small>(แตะเพื่อเปิดซอง)</small></p>
+  </div>
+
+  <!-- ==========================================
+       ฉากคำถาม (การ์ดหลัก)
+       ========================================== -->
   <main class="card" id="card">
     <div class="hearts" aria-hidden="true">
       <span>♡</span><span>♡</span><span>♡</span><span>♡</span>
     </div>
 
+    <!-- ส่วนคำถาม -->
     <section id="question">
-      <div class="cat-wrap" aria-hidden="true">
-        <svg viewBox="0 0 180 150" width="100%" height="100%">
-          <g fill="none" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-            <path fill="#fff" d="M44 78 L37 52 L50 61 L64 53 L73 66 C79 80 77 102 68 116 C58 126 40 124 33 112 C27 102 27 88 31 77 Z"/>
-            <path d="M44 84 q8 7 16 0"/>
-            <path d="M49 73 h1 M63 73 h1"/>
-            <path fill="#fff" d="M101 63 L96 41 L109 49 L122 40 L132 53 C141 60 145 78 139 92 C133 103 119 109 104 104 C92 101 85 91 87 79 Z"/>
-            <path d="M106 65 h1 M122 63 h1"/>
-            <path d="M109 76 q7 6 14 0"/>
-            <path d="M73 77 C83 70 91 70 101 76"/>
-            <path d="M98 84 C88 94 80 95 71 90"/>
-          </g>
-          <g fill="#ff8da7" font-size="22">
-            <text x="18" y="42">♡</text>
-            <text x="145" y="57">♡</text>
-            <text x="18" y="106">♡</text>
-          </g>
-        </svg>
+      <div class="img-wrap" aria-hidden="true">
+        <img id="reactionImg" src="wait.jpg" alt="รอคำตอบ">
       </div>
 
-      <h1>เป็นแฟนกันไหม 💗</h1>
+      <h1>Would You Be My Baby 💗</h1>
 
       <div class="buttons" id="buttonArea">
-        <button id="yesBtn">ตกลง 💕</button>
-        <button id="noBtn">ไม่!! 😭</button>
+        <button id="yesBtn">Yeahhh! 💕</button>
+        <button id="noBtn">Nuh-uhhh 🥺😭</button>
       </div>
-      <div class="footer">ตอบดี ๆ นะ คนทำเว็บลุ้นอยู่ 😳</div>
     </section>
 
+    <!-- ส่วนตอบตกลง -->
     <section class="success" id="success">
-      <div class="big">💞</div>
-      <h2>เย้! เป็นแฟนกันแล้วนะ</h2>
-      <p>จากวันนี้ขอฝากหัวใจไว้กับเธอด้วยนะ 🫶</p>
+      <div class="img-wrap" aria-hidden="true">
+        <img src="happy.jpg" alt="เย้!">
+      </div>
+      <h2>ขอโทษที่ให้รอนานนะ รักค้าบบบ 💗</h2>
     </section>
   </main>
 
   <script>
+    const envelopeBtn = document.getElementById('envelopeBtn');
+    const envelopeScreen = document.getElementById('envelopeScreen');
+    const clickText = document.getElementById('clickText');
+
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
     const question = document.getElementById('question');
     const success = document.getElementById('success');
     const musicBtn = document.getElementById('musicBtn');
     const bgMusic = document.getElementById('bgMusic');
+    const reactionImg = document.getElementById('reactionImg');
 
     let noCount = 0;
     let isMusicPlaying = false;
     let userHasInteracted = false;
+    
+    const waitImages = ['wait.jpg', 'wait1.jpg', 'wait2.jpg'];
+    let currentImgIndex = 0;
 
+    // ==========================================
+    // ระบบเปิดซองจดหมายแบบอลังการ (เพิ่มพลุหัวใจตอนเปิดซอง)
+    // ==========================================
+    envelopeBtn.addEventListener('click', () => {
+      startMusic();
+      
+      // ให้ซองเปิด
+      envelopeBtn.classList.add('open');
+      
+      // ซ่อนข้อความ "แตะเพื่อเปิดซอง" ทันที
+      clickText.style.opacity = '0';
+
+      // 💥 สร้างเอฟเฟกต์ "พลุหัวใจกระจายตัว" ทันทีที่กดซอง
+      const emojis = ['💖', '💕', '💗', '✨', '💌'];
+      for (let i = 0; i < 60; i++) { // ยิงพลุออกไป 60 ดวง
+        const particle = document.createElement('div');
+        particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        particle.style.position = 'fixed';
+        particle.style.left = '50%';
+        particle.style.top = '50%';
+        particle.style.fontSize = (16 + Math.random() * 24) + 'px';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = 100000;
+        document.body.appendChild(particle);
+
+        // สุ่มระยะกระเด็นในทุกทิศทาง
+        const tx = (Math.random() - 0.5) * 150; // แนวนอน
+        const ty = (Math.random() - 0.5) * 150; // แนวตั้ง
+
+        const duration = 1000 + Math.random() * 1500;
+
+        // สั่งให้กระจายออกอย่างรวดเร็วแล้วค่อยๆ เฟดจางหายไป
+        particle.animate([
+          { transform: `translate(-50%, -50%) scale(0.2) rotate(0deg)`, opacity: 1 },
+          { transform: `translate(calc(-50% + ${tx}vw), calc(-50% + ${ty}vh)) scale(1.5) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+        ], {
+          duration: duration,
+          easing: 'cubic-bezier(0, .9, .5, 1)', // กระเด็นออกเร็วๆ แล้วชะลอตอนปลาย
+          fill: 'forwards'
+        });
+
+        setTimeout(() => particle.remove(), duration);
+      }
+      
+      // รอให้จดหมายเด้งขึ้นมาสักพัก แล้วค่อยสั่งให้ฉากซองเฟดจางและซูมหายไป
+      setTimeout(() => {
+        envelopeScreen.classList.add('fade-out');
+      }, 1600); 
+    }, { once: true }); // ให้กดซองได้แค่ครั้งเดียว
+
+    // ==========================================
+    // ระบบปุ่มหนี & วนลูปรูป
+    // ==========================================
     function moveNoButton() {
-      // เปลี่ยนข้อความทันทีที่ปุ่มขยับหนีครั้งแรก
-      noBtn.textContent = 'ไม่!! 😝';
+      noBtn.textContent = 'No Way!! 😝';
+
+      currentImgIndex = (currentImgIndex + 1) % waitImages.length;
+      reactionImg.src = waitImages[currentImgIndex];
 
       if (noBtn.parentNode !== document.body) {
         document.body.appendChild(noBtn);
@@ -273,46 +453,57 @@
       }, { passive: false });
     });
 
+    // ==========================================
+    // ระบบตอบตกลง & แคปซูลลอยค้าง
+    // ==========================================
     yesBtn.addEventListener('click', () => {
       startMusic();
       noBtn.style.display = 'none';
       question.style.display = 'none';
       success.style.display = 'block';
 
-      for (let i = 0; i < 22; i++) {
-        const heart = document.createElement('div');
-        heart.textContent = ['💗','💕','💖','💘'][Math.floor(Math.random()*4)];
-        heart.style.position = 'fixed';
-        heart.style.left = Math.random() * 100 + 'vw';
-        heart.style.top = '105vh';
-        heart.style.fontSize = (18 + Math.random() * 24) + 'px';
-        heart.style.transition = `transform ${2 + Math.random()*2}s ease-out, opacity ${2 + Math.random()*2}s ease-out`;
-        heart.style.zIndex = 9999;
-        heart.style.pointerEvents = 'none';
-        document.body.appendChild(heart);
+      const words = ['OK', 'รักค้าบ ❤', 'ยอม', 'Yes!', 'ตกลง'];
+      
+      for (let i = 0; i < 40; i++) {
+        const bubble = document.createElement('div');
+        bubble.className = 'floating-bubble';
+        bubble.textContent = words[Math.floor(Math.random() * words.length)];
+        
+        const finalX = -5 + Math.random() * 95; 
+        const finalY = 5 + Math.random() * 85; 
+        const rotate = (Math.random() - 0.5) * 50; 
+        
+        bubble.style.left = finalX + 'vw';
+        document.body.appendChild(bubble);
 
-        requestAnimationFrame(() => {
-          heart.style.transform = `translateY(-120vh) rotate(${Math.random()*360}deg)`;
-          heart.style.opacity = '0';
+        const duration = 1500 + Math.random() * 2500; 
+        const delay = Math.random() * 2000; 
+
+        bubble.animate([
+          { top: '110vh', opacity: 0, transform: `rotate(${rotate}deg) scale(0.6)` },
+          { top: finalY + 'vh', opacity: 1, transform: `rotate(${rotate}deg) scale(1)` }
+        ], {
+          duration: duration,
+          delay: delay,
+          easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', 
+          fill: 'forwards' 
         });
-
-        setTimeout(() => heart.remove(), 4200);
       }
     });
 
     // ==========================================
-    // ระบบควบคุมไฟล์เสียงท้องถิ่น (Local Audio)
+    // ระบบเล่นเพลง
     // ==========================================
-
     function startMusic() {
-      // สั่งให้เล่นเพลง 
-      bgMusic.play().then(() => {
-        isMusicPlaying = true;
-        musicBtn.textContent = '♫';
-        musicBtn.title = 'ปิดเพลง';
-      }).catch((err) => {
-        console.log("ระบบป้องกันออโต้เพลย์ทำงาน หรือยังโหลดไฟล์ไม่เสร็จ: ", err);
-      });
+      if (!isMusicPlaying) {
+        bgMusic.play().then(() => {
+          isMusicPlaying = true;
+          musicBtn.textContent = '♫';
+          musicBtn.title = 'ปิดเพลง';
+        }).catch((err) => {
+          console.log("รอการตอบสนองจากผู้ใช้ก่อนเล่นเพลง");
+        });
+      }
       userHasInteracted = true;
     }
 
@@ -323,7 +514,6 @@
       musicBtn.title = 'เปิดเพลง';
     }
 
-    // เมื่อกดปุ่มโน้ตดนตรีมุมขวาบน
     musicBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (isMusicPlaying) {
@@ -331,15 +521,6 @@
       } else {
         startMusic();
       }
-    });
-
-    // ทันทีที่ผู้ใช้แตะหรือคลิกที่หน้าจอครั้งแรก ให้เพลงเริ่มเล่นทันที
-    ['click', 'touchstart'].forEach(evt => {
-      document.body.addEventListener(evt, () => {
-        if (!userHasInteracted) {
-          startMusic();
-        }
-      }, { once: true });
     });
 
   </script>
